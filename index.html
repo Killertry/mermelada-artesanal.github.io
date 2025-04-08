@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>El Rincón de la Mermelada</title>
+    <style>
+        body {
+            font-family: 'Georgia', serif; /* Fuente con estilo vintage */
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5dc; /* Color de fondo beige */
+            color: #333;
+        }
+        header {
+            display: flex;
+            flex-direction: column; /* Cambiar a columna para pantallas pequeñas */
+            align-items: center; /* Centrar elementos */
+            background-color: rgba(255, 255, 255, 0.9); /* Fondo blanco semi-transparente */
+            padding: 10px 20px;
+            border-bottom: 2px solid #d2b48c; /* Línea inferior color marrón claro */
+        }
+        h1 {
+            font-weight: bold;
+            font-style: italic;
+            text-align: center;
+            margin: 0;
+            color: #8b4513; /* Color marrón */
+        }
+        nav {
+            margin: 10px 0; /* Espaciado vertical */
+        }
+        nav a {
+            margin: 0 10px; /* Espaciado horizontal */
+            text-decoration: none;
+            color: #8b4513; /* Color marrón */
+            font-weight: bold;
+            transition: color 0.3s;
+        }
+        nav a:hover {
+            color: #d2691e; /* Color marrón más claro al pasar el mouse */
+        }
+        .content {
+            padding: 20px;
+        }
+        h2 {
+            font-style: italic;
+            font-weight: bold;
+            color: #8b4513; /* Color marrón */
+        }
+        .slogan {
+            font-size: 1.5em; /* Tamaño de fuente más grande */
+            font-weight: bold;
+            color: #d2691e; /* Color marrón claro */
+            text-align: center;
+            margin: 10px 0;
+            font-style: italic; /* Estilo en cursiva */
+        }
+        .footer {
+            text-align: center;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-top: 2px solid #d2b48c; /* Línea superior color marrón claro */
+        }
+        .whatsapp-icon {
+            width: 40px; /* Ajuste del tamaño del logo de WhatsApp */
+            height: auto;
+        }
+        .product {
+            border: 1px solid #d2b48c; /* Borde marrón claro */
+            padding: 10px;
+            margin: 10px 0;
+            background-color: #fff;
+            border-radius: 5px;
+            text-align: center; /* Centrar contenido */
+        }
+        .product img {
+            width: 100%; /* Ajustar imagen al 100% del contenedor */
+            max-width: 100px; /* Limitar el tamaño máximo */
+            height: auto;
+        }
+        .cart {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #d2b48c; /* Borde marrón claro */
+            background-color: #fff;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #d2691e; /* Color marrón claro */
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            width: 100%; /* Botones ocupan el 100% del ancho */
+        }
+        button:hover {
+            background-color: #8b4513; /* Color marrón oscuro al pasar el mouse */
+        }
+        .order-form {
+            display: none; /* Oculto por defecto */
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #d2b48c; /* Borde marrón claro */
+            background-color: #fff;
+            border-radius: 5px;
+        }
+        .order-form input, .order-form textarea {
+            width: 100%;
+            margin: 5px 0;
+            padding: 10px;
+            border: 1px solid #d2b48c;
+            border-radius: 5px;
+        }
+        .payment-method {
+            margin-top: 20px;
+            display: none; /* Oculto por defecto */
+        }
+        .card-payment-form {
+            display: none; /* Oculto por defecto */
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #d2b48c; /* Borde marrón claro */
+            background-color: #fff;
+            border-radius: 5px;
+        }
+        .card-payment-form input {
+            width: 100%;
+            margin: 5px 0;
+            padding: 10px;
+            border: 1px solid #d2b48c;
+            border-radius: 5px;
+        }
+
+        /* Media Queries para ajustar el diseño en pantallas pequeñas */
+        @media (min-width: 600px) {
+            header {
+                flex-direction: row; /* Cambiar a fila para pantallas más grandes */
+                justify-content: space-between; /* Espaciado entre logo y nav */
+            }
+
+            nav a {
+                margin: 0 15px; /* Espaciado horizontal para pantallas más grandes */
+            }
+
+            .product {
+                display: inline-block; /* Mostrar productos en línea */
+                width: calc(33.33% - 20px); /* Tres productos por fila */
+                margin: 10px; /* Espaciado entre productos */
+            }
+
+            .cart {
+                width: 50%; /* Ancho del carrito en pantallas más grandes */
+                margin: auto; /* Centrar el carrito */
+            }
+        }
+    </style>
+    <script>
+        let cart = [];
+        const pricePerUnit = 20.50;
+
+        function addToCart(product) {
+            const quantity = document.getElementById(`quantity-${product}`).value;
+            for (let i = 0; i < quantity; i++) {
+                cart.push(product);
+            }
+            updateCart();
+        }
+
+        function updateCart() {
+            const cartList = document.getElementById('cart-list');
+            const totalDisplay = document.getElementById('total');
+            cartList.innerHTML = '';
+            let total = 0;
+
+            const productCount = {};
+            cart.forEach(item => {
+                productCount[item] = (productCount[item] || 0) + 1;
+            });
+
+            for (const [item, count] of Object.entries(productCount)) {
+                const li = document.createElement('li');
+                const subtotal = count * pricePerUnit;
+                total += subtotal;
+                li.textContent = `${item} x${count} - Q ${pricePerUnit.toFixed(2)} (Subtotal: Q ${subtotal.toFixed(2)})`;
+                cartList.appendChild(li);
+            }
+
+            totalDisplay.textContent = `Total: Q ${total.toFixed(2)}`;
+        }
+
+        function checkout() {
+            document.getElementById('order-form').style.display = 'block'; // Mostrar formulario
+        }
+
+        function submitOrder() {
+            const name = document.querySelector('input[placeholder="Nombre completo"]').value;
+            const address = document.querySelector('input[placeholder="Dirección"]').value;
+            const phone = document.querySelector('input[placeholder="Número de teléfono"]').value;
+            const comments = document.querySelector('textarea[placeholder="Comentarios sobre la entrega"]').value;
+
+            // Aquí se puede agregar la lógica para enviar los datos a un archivo de Excel
+            alert(`Pedido realizado con éxito!\nNombre: ${name}\nDirección: ${address}\nTeléfono: ${phone}\nComentarios: ${comments}`);
+            
+            cart = []; // Limpiar carrito
+            updateCart();
+            document.getElementById('order-form').style.display = 'none'; // Ocultar formulario
+            document.getElementById('payment-methods').style.display = 'block'; // Mostrar métodos de pago
+        }
+
+        function payWithPayPal() {
+            // Redirigir a PayPal
+            window.location.href = "https://www.paypal.com"; // URL de PayPal
+        }
+
+        function payWithCard() {
+            document.getElementById('card-payment-form').style.display = 'block'; // Mostrar formulario de tarjeta
+        }
+
+        function processCardPayment() {
+            const cardNumber = document.getElementById('card-number').value;
+            const cardName = document.getElementById('card-name').value;
+            const cardExpiry = document.getElementById('card-expiry').value;
+            const cardCVC = document.getElementById('card-cvc').value;
+
+            // Aquí se puede agregar la lógica real para procesar el pago con tarjeta
+            alert(`Procesando pago con tarjeta...\nNúmero de tarjeta: ${cardNumber}\nNombre: ${cardName}\nFecha de expiración: ${cardExpiry}\nCVC: ${cardCVC}`);
+            // Simulación de éxito
+            alert('Pago procesado con éxito!');
+            document.getElementById('card-payment-form').style.display = 'none'; // Ocultar formulario de tarjeta
+        }
+    </script>
+</head>
+<body>
+
+<header>
+    <img src="logo.png" alt="Logo" style="width: 120px; height: auto;"> <!-- Ajuste del tamaño del logo -->
+    <h1>El Rincón de la Mermelada</h1>
+    <nav>
+        <a href="#quienes-somos">¿Quiénes somos?</a>
+        <a href="#nuestros-productos">Nuestros productos</a>
+    </nav>
+</header>
+
+<div class="content">
+    <section id="quienes-somos">
+        <h2>¿Quiénes somos?</h2>
+        <p><strong>Misión:</strong> <em>Ofrecer las mejores mermeladas artesanales, elaboradas con ingredientes frescos y naturales.</em></p>
+        <p><strong>Visión:</strong> <em>Ser la marca líder en el mercado de mermeladas artesanales, reconocida por su calidad y sabor.</em></p>
+        <p class="slogan">"El sabor de la tradición en cada frasco."</p> <!-- Frase resaltada -->
+    </section>
+
+    <section id="nuestros-productos">
+        <h2>Nuestros productos</h2>
+        <div class="product">
+            <h3>Mermelada de Fresa</h3>
+            <img src="mermelada-fresa.jpg" alt="Mermelada de Fresa">
+            <p>Deliciosa mermelada de fresas frescas.</p>
+            <input type="number" id="quantity-Mermelada de Fresa" min="1" value="1" style="width: 50px;">
+            <button onclick="addToCart('Mermelada de Fresa')">Añadir al carrito</button>
+        </div>
+        <div class="product">
+            <h3>Mermelada de Durazno</h3>
+            <img src="mermelada-durazno.jpg" alt="Mermelada de Durazno">
+            <p>Suave y dulce mermelada de duraznos.</p>
+            <input type="number" id="quantity-Mermelada de Durazno" min="1" value="1" style="width: 50px;">
+            <button onclick="addToCart('Mermelada de Durazno')">Añadir al carrito</button>
+        </div>
+        <div class="product">
+            <h3>Mermelada de Mora</h3>
+            <img src="mermelada-mora.jpg" alt="Mermelada de Mora">
+            <p>Exquisita mermelada de moras silvestres.</p>
+            <input type="number" id="quantity-Mermelada de Mora" min="1" value="1" style="width: 50px;">
+            <button onclick="addToCart('Mermelada de Mora')">Añadir al carrito</button>
+        </div>
+    </section>
+
+    <div class="cart">
+        <h2>Carrito de Compras</h2>
+        <ul id="cart-list">
+            <!-- Los productos añadidos al carrito aparecerán aquí -->
+        </ul>
+        <p id="total">Total: Q 0.00</p>
+        <button onclick="checkout()">Realizar compra</button>
+    </div>
+
+    <div class="order-form" id="order-form">
+        <h2>Formulario de Pedido</h2>
+        <input type="text" placeholder="Nombre completo" required>
+        <input type="text" placeholder="Dirección" required>
+        <input type="text" placeholder="Número de teléfono" required>
+        <textarea placeholder="Comentarios sobre la entrega" rows="4"></textarea>
+        <button onclick="submitOrder()">Enviar Pedido</button>
+    </div>
+
+    <div class="payment-method" id="payment-methods">
+        <h2>Métodos de Pago</h2>
+        <button onclick="payWithPayPal()">Pagar con PayPal</button>
+        <button onclick="payWithCard()">Pagar con Tarjeta</button>
+    </div>
+
+    <div class="card-payment-form" id="card-payment-form">
+        <h2>Pago con Tarjeta</h2>
+        <input type="text" id="card-number" placeholder="Número de tarjeta" required>
+        <input type="text" id="card-name" placeholder="Nombre en la tarjeta" required>
+        <input type="text" id="card-expiry" placeholder="Fecha de expiración (MM/AA)" required>
+        <input type="text" id="card-cvc" placeholder="CVC" required>
+        <button onclick="processCardPayment()">Procesar Pago</button>
+    </div>
+</div>
+
+<div class="footer">
+    <a href="https://wa.me/51278793" target="_blank"> 
+        <img src="logo2.png" alt="WhatsApp" class="whatsapp-icon"> 
+    </a>
+    <p>Contáctanos para más información.</p>
+</div>
+
+</body>
+</html>
